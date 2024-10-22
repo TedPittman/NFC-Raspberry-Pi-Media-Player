@@ -2,11 +2,11 @@
 Codebase for connecting a PN-532 NFC chip to a Raspberry Pi 4 to result in an on demand mp3 player and spotify playback controller
 
 ## Physical Connections
-|**PN532 Pin** |	**Raspberry Pi Pin** |	**Description**|
-|---------| ----------- | ---------- |
-|SCK |	GPIO 11 (Pin 23)	| Serial Clock (SCK)|
-|MSO	| GPIO 9 (Pin 21)	| Master In Slave Out (MISO) |
-|MOSI	| GPIO 10 (Pin 19)	| Master Out Slave In (MOSI) |
+| **PN532 Pin** |	**Raspberry Pi Pin** | **Description** |
+| --------- | ----------- | ---------- |
+|SCK |	GPIO 11 (Pin 23) | Serial Clock (SCK)|
+|MSO | GPIO 9 (Pin 21) | Master In Slave Out (MISO) |
+|MOSI	| GPIO 10 (Pin 19) | Master Out Slave In (MOSI) |
 |SS	| GPIO 8 (Pin 24)	| Chip Select (SS/CS) |
 |VCC	| Pin 1 (3.3V)	| Power |
 |GND	| Pin 6 (Ground)	| Ground |
