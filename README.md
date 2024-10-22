@@ -2,6 +2,8 @@
 Codebase for connecting a PN-532 NFC chip to a Raspberry Pi 4 to result in an on demand mp3 player and spotify playback controller
 
 ## Physical Connections
+Use GPIO pins to connect the chip to the Pi via SPI.
+Here are the connections used for this project:
 | **PN532 Pin** |	**Raspberry Pi Pin** | **Description** |
 | --------- | ----------- | ---------- |
 |SCK |	GPIO 11 (Pin 23) | Serial Clock (SCK)|
@@ -18,7 +20,9 @@ Codebase for connecting a PN-532 NFC chip to a Raspberry Pi 4 to result in an on
 Conifrm that SPI is enabled on the Pi by
 `sudo raspi-config` -> interfacing options -> SPI 
 
-Switch the mode of the PN 532 chip to SPI by removing the yellow plastic cover from black housing with yellow switches towards edge of chip, for SPI switch 1 is off switch 2 is on
+You must physically switch the mode to SPI by removing the yellow plastic cover from the black housing with 2 yellow switches towards the edge of the chip.
+
+Switch 1 is off switch 2 is on for SPI mode.
 
 SPI Python tools 
 ```
