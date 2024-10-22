@@ -15,7 +15,10 @@ Codebase for connecting a PN-532 NFC chip to a Raspberry Pi 4 to result in an on
 
 
 ## SPI 
-Conifrm that SPI is enabled on the Pi by `sudo raspi-config` -> interfacing options -> SPI 
+Conifrm that SPI is enabled on the Pi by
+`sudo raspi-config` -> interfacing options -> SPI 
+
+Switch the mode of the PN 532 chip to SPI by removing the yellow plastic cover from black housing with yellow switches towards edge of chip, for SPI switch 1 is off switch 2 is on
 
 SPI Python tools 
 ```
