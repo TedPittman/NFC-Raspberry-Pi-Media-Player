@@ -32,3 +32,8 @@ sudo pip3 install spidev
 sudo pip3 install adafruit-circuitpython-pn532
 ```
 Create a file called [spi_test.py](spi_test.py) with the same code as that of the file provided for testing the connection to your Pi.
+
+## Documentation
+https://docs.circuitpython.org/projects/pn532/en/latest/api.html 
+Adafruit pn532.spi commands
+
