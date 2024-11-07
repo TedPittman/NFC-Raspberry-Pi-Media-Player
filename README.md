@@ -51,7 +51,7 @@ This has included instructions for additional playback controls once a file star
 
 ## Spotify Control
 To get a URI from a given track, click three dots next to track, hit share, hold Alt key, select copy URI
-run the provided [play_tag_spotify](play_tag_spotify.py) file.
+run the provided [play_tag_spotify.py](play_tag_spotify.py) file.
 This has included instructions for additional playback controls once a file starts playing, including pause/resume, stop, and volume control.
 
 
