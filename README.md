@@ -17,9 +17,11 @@ Here are the connections used for this project:
 ## Miscellaneous
 Assorted necessary python packages
 ```
-pip install mutagen
-pip install pygame
-pip install spotipy
+sudo apt update
+sudo apt-get install python3-dev python3-pip
+sudo pip install mutagen
+sudo pip install pygame
+sudo pip install spotipy
 ```
 
 
@@ -41,18 +43,26 @@ sudo pip3 install adafruit-circuitpython-pn532
 ```
 Create a file called [spi_test.py](spi_test.py) with the same code as that of the file provided for testing the connection to your Pi.
 
+
+## Play mp3
+run the provided [play_tag_mp3.py](play_tag_mp3.py) file.
+This has included instructions for additional playback controls once a file starts playing, including pause/resume, stop, and volume control.
+
+
 ## Spotify Control
 To get a URI from a given track, click three dots next to track, hit share, hold Alt key, select copy URI
+run the provided [play_tag_spotify](play_tag_spotify.py) file.
+This has included instructions for additional playback controls once a file starts playing, including pause/resume, stop, and volume control.
+
+
 
 example URI: 
 spotify:track:7FWFrfaypHHHxMyXR5eR6S
 
 
-https://developer.spotify.com/documentation/web-api/concepts/spotify-uris-ids
-
-
-
 ## Documentation
-https://docs.circuitpython.org/projects/pn532/en/latest/api.html 
 Adafruit pn532.spi commands
+https://docs.circuitpython.org/projects/pn532/en/latest/api.html 
 
+Spotify Developer notes
+https://developer.spotify.com/documentation/web-api/concepts/spotify-uris-ids
