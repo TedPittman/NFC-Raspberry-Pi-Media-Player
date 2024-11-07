@@ -14,6 +14,13 @@ Here are the connections used for this project:
 |GND	| Pin 6 (Ground)	| Ground |
 |RSTO	| GPIO 25 (Pin 22) |	Reset |
 
+## Miscellaneous
+Assorted necessary python packages
+```
+pip install mutagen
+pip install pygame
+```
+
 
 
 ## SPI 
