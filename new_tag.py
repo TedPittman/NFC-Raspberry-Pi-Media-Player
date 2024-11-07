@@ -16,7 +16,7 @@ pn532 = PN532_SPI(spi, cs_pin, reset=reset_pin)
 pygame.mixer.init()
 
 # file to store the NFC to MP3 associations
-nfc_mapping_file = "nfc_mp3_mapping.json"
+nfc_mapping_file = "nfc_mapping.json"
 
 # load the tag-MP3 mappings
 def load_nfc_mapping():
@@ -42,19 +42,50 @@ def read_nfc_tag():
         return None
     return ''.join([f'{i:02X}' for i in uid])
 
-# write to an NFC tag with path for an MP3 file
-def associate_nfc_with_mp3(tag_uid, mp3_file):
-    nfc_mapping[tag_uid] = mp3_file
+# write to an NFC tag with path for an MP3 file and URL
+def associate_nfc_with_content(tag_uid, mp3_file = None, spotify_url = None):
+    if tag_uid in nfc_mapping:
+        print(f"Tag {tag_uid} is already assigned to {nfc_mapping[tag_uid]}, remapping...")
+        # update dictionary
+        if mp3_file:
+            nfc_mapping[tag_uid]["mp3"] = mp3_file
+        if spotify_url:
+            nfc_mapping[tag_uid]["spotify"] = spotify_url
+    else:
+        print(f"Assigning new tag {tag_uid}")
+        # initialize tag's mapping entry as empty dictionary if it doesn't exist
+        nfc_mapping[tag_uid] = {}
+
+        # update dictionary
+        if mp3_file:
+            nfc_mapping[tag_uid]["mp3"] = mp3_file
+        if spotify_url:
+            nfc_mapping[tag_uid]["spotify"] = spotify_url
+        
     save_nfc_mapping(nfc_mapping)
-    print(f"Tag {tag_uid} has been assigned to {mp3_file}")
+    print(f"Tag {tag_uid} has been updated with MP3: {mp3_file} and Spotify: {spotify_url}")
 
 
-# main loop to assign an MP3 to an NFC tag
-mp3_file = "/home/pi/Desktop/nfcproject/Music/07 - Drive Back.mp3"  # Set this to the path of your MP3 file
-print("Place the NFC tag to associate with the MP3 file.")
+# main loop to assign an MP3 or URL to an NFC tag
+print("Would you like to associate an MP3 or a URL with an NFC tag?")
+content_type = input("Enter 'mp3' for an MP3 file, 'url' for a Spotify URL, or 'both' for both: ").strip().lower()
+
+# get MP3 and/or URL from the user
+if content_type == "mp3" or content_type == "both":
+    mp3_file = input("Enter the full path to the MP3 file: ").strip()
+
+if content_type == "url" or content_type == "both":
+    spotify_url = input("Enter the Spotify URL (e.g., spotify:track:abc123): ").strip()
+
+print("Place the NFC tag to associate with the MP3 file and/or Spotify URL.")
 tag_uid = read_nfc_tag()
 
 if tag_uid:
-    associate_nfc_with_mp3(tag_uid, mp3_file)
+    if content_type == "mp3":
+        associate_nfc_with_content(tag_uid, mp3_file = mp3_file)
+    elif content_type == "url":
+        associate_nfc_with_content(tag_uid, spotify_url = spotify_url)
+    elif content_type == "both":
+        associate_nfc_with_content(tag_uid, mp3_file = mp3_file, spotify_url = spotify_url)
 else:
     print("No tag detected.")
