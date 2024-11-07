@@ -43,8 +43,12 @@ Create a file called [spi_test.py](spi_test.py) with the same code as that of th
 
 ## Spotify Control
 To get a URI from a given track, click three dots next to track, hit share, hold Alt key, select copy URI
+
 example URI: 
 spotify:track:7FWFrfaypHHHxMyXR5eR6S
+
+
+https://developer.spotify.com/documentation/web-api/concepts/spotify-uris-ids
 
 
 
