@@ -19,6 +19,7 @@ Assorted necessary python packages
 ```
 pip install mutagen
 pip install pygame
+pip install spotipy
 ```
 
 
