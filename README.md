@@ -43,6 +43,9 @@ sudo pip3 install adafruit-circuitpython-pn532
 ```
 Create a file called [spi_test.py](spi_test.py) with the same code as that of the file provided for testing the connection to your Pi.
 
+## NFC card UID writing
+to 
+
 
 ## Play mp3
 run the provided [play_tag_mp3.py](play_tag_mp3.py) file.
