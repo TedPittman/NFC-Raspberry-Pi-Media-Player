@@ -1,5 +1,11 @@
 # NFC Raspberry Pi Media Player
-Codebase for connecting a PN-532 NFC chip to a Raspberry Pi 4 to result in an on demand mp3 player and spotify playback controller
+This project enables a Raspberry Pi 4 to interact with an NFC reader (PN-532) for on-demand MP3 playback and Spotify control. NFC cards are configured to store references to either MP3 files or Spotify URIs, allowing users to scan cards and instantly trigger playback through local speakers.
+
+## Features
+* NFC to MP3/Spotify Mapping: Each NFC card can store both an MP3 file path and a Spotify track URI, enabling dual functionality on a single card.
+* Local MP3 Playback: Uses pygame for MP3 playback with support for pause/resume, stop, and volume control.
+* Spotify Control: Allows playback of Spotify tracks mapped to NFC cards, using the Spotify API.
+* Asynchronous Operation: Ensures NFC scanning and playback work seamlessly for both MP3 and Spotify tracks without interference.
 
 ## Physical Connections
 Use GPIO pins to connect the chip to the Pi via SPI.
@@ -43,8 +49,25 @@ sudo pip3 install adafruit-circuitpython-pn532
 ```
 Create a file called [spi_test.py](spi_test.py) with the same code as that of the file provided for testing the connection to your Pi.
 
-## NFC card UID writing
-to 
+## NFC Tag UID Mapping
+Each NFC card stores its unique UID in a JSON file (nfc_mapping.json). This file maps each tag’s UID to an MP3 file path and/or Spotify URI, allowing flexible content association:
+
+MP3: Local file path for MP3 playback.
+Spotify: Spotify track URI for streaming playback.
+Example Mapping Structure:
+json
+```
+{
+  "AF6ACC1C": {
+    "mp3": "/home/pi/Music/song.mp3",
+    "spotify": "spotify:track:7Jsli31ZTv3TI28qcXzEkE"
+  }
+}
+```
+# Associating Content with Tags
+Run [new_tag.py](new_tag.py) to add or update content mappings for NFC cards:
+Select mp3, url, or both to define the type of content.
+Scan the NFC card to store the content in nfc_mapping.json.
 
 
 ## Play mp3
