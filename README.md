@@ -64,7 +64,7 @@ json
   }
 }
 ```
-# Associating Content with Tags
+## Associating Content with Tags
 Run [new_tag.py](new_tag.py) to add or update content mappings for NFC cards:
 Select mp3, url, or both to define the type of content.
 Scan the NFC card to store the content in nfc_mapping.json.
