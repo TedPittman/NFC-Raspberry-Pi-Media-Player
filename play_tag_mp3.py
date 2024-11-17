@@ -10,6 +10,7 @@ import select
 import threading
 from mutagen.mp3 import MP3 
 from mutagen.easyid3 import EasyID3
+from spotify_control import play_spotify_track, control_spotify_playback
 
 # configure SPI
 spi = busio.SPI(board.SCK, board.MOSI, board.MISO)
@@ -22,19 +23,27 @@ pn532 = PN532_SPI(spi, cs_pin, reset=reset_pin)
 pygame.mixer.init()
 
 # File to store the NFC to MP3 associations
-nfc_mapping_file = "nfc_mp3_mapping.json"
+nfc_mapping_file = "nfc_mapping.json"
 
 # Function to load the tag-MP3 mappings
 def load_nfc_mapping():
     try:
         with open(nfc_mapping_file, "r") as f:
-            return json.load(f)
+            data = json.load(f)
+            print("Successfully loaded NFC mapping file.")
+            return data
     except FileNotFoundError:
+        print(f"Error: File '{nfc_mapping_file}' not found.")
         return {}
 
 nfc_mapping = load_nfc_mapping()
+# DISPLAY NFC DICTIONARY DATA
+# print(f"Loaded NFC mapping: {nfc_mapping}")
+# print(json.dumps(nfc_mapping, indent=4))
+
+
 print("Waiting for an NFC card...")
-# read tag
+
 '''
 read_passive_target(card_baud: int = micropython.const, timeout: float = 1) -> bytearray | None
 Wait for a MiFare card to be available and return its UID when found.
@@ -50,21 +59,34 @@ def read_nfc_tag():
 # play associated file when a tag is scanned
 def play_mp3(tag_uid):
     if tag_uid in nfc_mapping:
-        mp3_file = nfc_mapping[tag_uid]
-        print(f"Playing {mp3_file}")
-        # load mp3 metadata
-        metadata = MP3(mp3_file, ID3 = EasyID3)
-        title = metadata.get('title', ['Unknown Title'])[0]
-        artist = metadata.get('artist', ['Unknown Artist'])[0]
-        album = metadata.get('album', ['Unknown Album'])[0]
-        # track_number = metadata.get('tracknumber', ['Unknown Track'])[0]
-        track_info = f"{title} by {artist} from the album {album}."
-        print(track_info)
+        # nested dictionary for tag UID
+        tag_data = nfc_mapping[tag_uid]
 
-        pygame.mixer.music.load(mp3_file)
-        pygame.mixer.music.play()
+        if "mp3" in tag_data:
+            mp3_file = tag_data["mp3"]
+            print(f"Playing {mp3_file}")
+            
+            # load mp3 metadata
+            try:
+                metadata = MP3(mp3_file, ID3=EasyID3)
+                title = metadata.get('title', ['Unknown Title'])[0]
+                artist = metadata.get('artist', ['Unknown Artist'])[0]
+                album = metadata.get('album', ['Unknown Album'])[0]
+                track_info = f"{title} by {artist} from the album {album}."
+                print(track_info)
+            except Exception as e:
+                print(f"Failed to load metadata for {mp3_file}: {e}")
+
+            # play file
+            try:
+                pygame.mixer.music.load(mp3_file)
+                pygame.mixer.music.play()
+            except Exception as e:
+                print(f"Error playing MP3 file {mp3_file}: {e}")
+        else:
+            print("No MP3 associated with this tag.")
     else:
-        print("No MP3 associated with this tag.")
+        print("Scanned tag not found in NFC mapping.")
 
 # check for keyboard input without blocking
 def get_keyboard_input():
@@ -74,7 +96,7 @@ def get_keyboard_input():
 
 # NFC scanning function
 def nfc_scan_loop():
-    cooldown_time = 5
+    cooldown_time = 1.0
     last_scan_time = 0
     global is_paused
 
@@ -85,10 +107,11 @@ def nfc_scan_loop():
         if current_time - last_scan_time >= cooldown_time:
             tag_uid = read_nfc_tag()
             if tag_uid:
+                # print(f"Scanned UID: {tag_uid}")  # debug to find UID
                 play_mp3(tag_uid)
                 last_scan_time = current_time  # reset cooldown
-                is_paused = False  # reset pause when a new song plays
-            time.sleep(0.1)
+                is_paused = False
+            # time.sleep(0.1)
 
 # keyboard input handling function
 def keyboard_input_loop():
@@ -125,7 +148,6 @@ def keyboard_input_loop():
                 print(f"Volume decreased to {pygame.mixer.music.get_volume():.1f}")
         time.sleep(0.1)
 
-# variable for pause state of track
 is_paused = False
 
 # start both NFC scanning and keyboard input handling in parallel

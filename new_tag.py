@@ -29,7 +29,7 @@ def load_nfc_mapping():
 # save the tag-MP3 mappings
 def save_nfc_mapping(mapping):
     with open(nfc_mapping_file, "w") as f:
-        json.dump(mapping, f)
+        json.dump(mapping, f, indent=4)
 
 # Load existing mappings
 nfc_mapping = load_nfc_mapping()

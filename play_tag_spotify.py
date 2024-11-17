@@ -8,9 +8,7 @@ import json
 import sys
 import select
 import threading
-from mutagen.mp3 import MP3 
-from mutagen.easyid3 import EasyID3
-from spotify_control import play_spotify_track, control_spotify_playback
+from spotify_control import play_spotify_track, control_spotify_playback, get_spotify_client
 
 # configure SPI
 spi = busio.SPI(board.SCK, board.MOSI, board.MISO)
@@ -23,16 +21,28 @@ pn532 = PN532_SPI(spi, cs_pin, reset=reset_pin)
 pygame.mixer.init()
 
 # File to store the NFC to Spotify track URI associations
-spotify_mapping_file = "nfc_spotify_mapping.json"
+nfc_mapping_file = "nfc_mapping.json"
 
-def load_spotify_mapping():
+# load Spotify client
+sp = get_spotify_client()
+
+# Function to load the tag-MP3 mappings
+def load_nfc_mapping():
     try:
-        with open(spotify_mapping_file, "r") as f:
-            return json.load(f)
+        with open(nfc_mapping_file, "r") as f:
+            data = json.load(f)
+            print("Successfully loaded NFC mapping file.")
+            return data
     except FileNotFoundError:
+        print(f"Error: File '{nfc_mapping_file}' not found.")
         return {}
 
-spotify_mapping = load_spotify_mapping()
+nfc_mapping = load_nfc_mapping()
+# DISPLAY NFC DICTIONARY DATA
+# print(f"Loaded NFC mapping: {nfc_mapping}")
+# print(json.dumps(nfc_mapping, indent=4))
+
+
 print("Waiting for an NFC card...")
 
 '''
@@ -41,7 +51,6 @@ Wait for a MiFare card to be available and return its UID when found.
 Will wait up to timeout seconds and return None if no card is found, 
 otherwise a bytearray with the UID of the found card is returned.
 '''
-# read
 def read_nfc_tag():
     uid = pn532.read_passive_target(timeout=5.0)
     if uid is None:
@@ -50,11 +59,18 @@ def read_nfc_tag():
 
 # function to play Spotify track associated with NFC tag
 def play_spotify_from_tag(tag_uid):
-    if tag_uid in spotify_mapping:
-        track_uri = spotify_mapping[tag_uid]
-        play_spotify_track(track_uri)
+    if tag_uid in nfc_mapping:
+        # nested dictionary
+        tag_data = nfc_mapping[tag_uid]
+
+        if "spotify" in tag_data:
+            track_uri = tag_data["spotify"]
+            play_spotify_track(track_uri)
+            print(f"Playing Spotify track associated with UID {tag_uid}")
+        else:
+            print("No Spotify track associated with this tag.")
     else:
-        print("No Spotify track associated with this tag.")
+        print("Tag not found in NFC mapping file.")
 
 # check for keyboard input without blocking
 def get_keyboard_input():
@@ -62,39 +78,64 @@ def get_keyboard_input():
         return sys.stdin.read(1)
     return None
 
-# NFC scanning function
-def nfc_scan_loop():
-    cooldown_time = 5
-    last_scan_time = 0
-
-    while True:
-        current_time = time.time()
-        
-        # check tag if cooldown period passed
-        if current_time - last_scan_time >= cooldown_time:
-            tag_uid = read_nfc_tag()
-            if tag_uid:
-                play_spotify_from_tag(tag_uid)
-                last_scan_time = current_time  # reset cooldown
-            time.sleep(0.1)
-
 # keyboard input handling function
 def keyboard_input_loop():
     print("Controls: [p] Pause/Play, [s] Stop, [+] Volume Up, [-] Volume Down")
+    
+    # Get spotify client once at the start
+    sp = get_spotify_client()
 
     while True:
         user_input = get_keyboard_input()
         if user_input:
-            if user_input == 'p':  # pause or unpause playback
-                control_spotify_playback('pause' if sp.current_playback()['is_playing'] else 'resume')
-            elif user_input == 's':  # stop playback
-                control_spotify_playback('stop')
-            elif user_input == '+':  # increase volume
-                control_spotify_playback('volume_up')
-            elif user_input == '-':  # decrease volume
-                control_spotify_playback('volume_down')
+            try:
+                playback = sp.current_playback()
+                if user_input == 'p':  # pause or unpause playback
+                    if playback and playback.get('is_playing'):
+                        control_spotify_playback('pause')
+                    else:
+                        control_spotify_playback('resume')
+                elif user_input == 's':  # stop playback
+                    control_spotify_playback('stop')
+                elif user_input == '+':  # increase volume
+                    control_spotify_playback('volume_up')
+                elif user_input == '-':  # decrease volume
+                    control_spotify_playback('volume_down')
+            except Exception as e:
+                print(f"Error handling keyboard input: {e}")
+                # If we get a connection error, try to reconnect
+                try:
+                    sp = get_spotify_client()
+                except Exception as reconnect_error:
+                    print(f"Failed to reconnect: {reconnect_error}")
         time.sleep(0.1)
-    
+
+# NFC scanning function
+def nfc_scan_loop():
+    cooldown_time = 5
+    last_scan_time = 0
+    # Get spotify client once at the start
+    sp = get_spotify_client()
+
+    while True:
+        try:
+            current_time = time.time()
+            
+            # check tag if cooldown period passed
+            if current_time - last_scan_time >= cooldown_time:
+                tag_uid = read_nfc_tag()
+                if tag_uid:
+                    print(f"Scanned UID: {tag_uid}")  # debug to find UID
+                    play_spotify_from_tag(tag_uid)
+                    last_scan_time = current_time  # reset cooldown
+        except Exception as e:
+            print(f"Error during NFC scanning: {e}")
+            # If we get a connection error, try to reconnect
+            try:
+                sp = get_spotify_client()
+            except Exception as reconnect_error:
+                print(f"Failed to reconnect: {reconnect_error}")
+        time.sleep(0.1)
 
 # start both NFC scanning and keyboard input handling in parallel
 nfc_thread = threading.Thread(target=nfc_scan_loop)
