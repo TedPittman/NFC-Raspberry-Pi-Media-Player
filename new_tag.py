@@ -2,7 +2,6 @@ import busio
 import digitalio
 import board
 from adafruit_pn532.spi import PN532_SPI
-import pygame
 import json
 
 # configure SPI
@@ -12,13 +11,11 @@ reset_pin = digitalio.DigitalInOut(board.D25)  # reset connected to RSTO pin
 
 pn532 = PN532_SPI(spi, cs_pin, reset=reset_pin)
 
-# pygame mixer for playing mp3 files
-pygame.mixer.init()
 
-# file to store the NFC to MP3 associations
+# file to store the NFC associations
 nfc_mapping_file = "nfc_mapping.json"
 
-# load the tag-MP3 mappings
+# load tag mappings
 def load_nfc_mapping():
     try:
         with open(nfc_mapping_file, "r") as f:
@@ -26,12 +23,12 @@ def load_nfc_mapping():
     except FileNotFoundError:
         return {}
 
-# save the tag-MP3 mappings
+# save mappings
 def save_nfc_mapping(mapping):
     with open(nfc_mapping_file, "w") as f:
         json.dump(mapping, f, indent=4)
 
-# Load existing mappings
+# load existing mappings
 nfc_mapping = load_nfc_mapping()
 
 # Read the NFC tag
@@ -67,7 +64,7 @@ def associate_nfc_with_content(tag_uid, mp3_file = None, spotify_url = None):
 
 
 # main loop to assign an MP3 or URL to an NFC tag
-print("Would you like to associate an MP3 or a URL with an NFC tag?")
+print("Would you like to associate an MP3, a URL, or both with an NFC tag?")
 content_type = input("Enter 'mp3' for an MP3 file, 'url' for a Spotify URL, or 'both' for both: ").strip().lower()
 
 # get MP3 and/or URL from the user
@@ -75,7 +72,7 @@ if content_type == "mp3" or content_type == "both":
     mp3_file = input("Enter the full path to the MP3 file: ").strip()
 
 if content_type == "url" or content_type == "both":
-    spotify_url = input("Enter the Spotify URL (e.g., spotify:track:abc123): ").strip()
+    spotify_url = input("Enter the Spotify URL (e.g. spotify:track:abc123): ").strip()
 
 print("Place the NFC tag to associate with the MP3 file and/or Spotify URL.")
 tag_uid = read_nfc_tag()

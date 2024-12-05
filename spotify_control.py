@@ -8,7 +8,7 @@ SPOTIFY_CLIENT_SECRET = '5cd9b77c241b4287b2bdf58b0650122e'
 SPOTIFY_REDIRECT_URI = 'http://localhost:9090'
 SCOPE = 'user-modify-playback-state user-read-playback-state'
 
-# Set the path for the .cache file
+# set path for the .cache file
 cache_path = os.path.expanduser('~/.spotify_cache')
 
 # initialize Spotipy client with OAuth
@@ -28,7 +28,7 @@ def get_spotify_client():
                 cache_path=cache_path
             )
             
-            # Check if we already have a cached token
+            # check if a cached token already exists on user device
             if not os.path.exists(cache_path):
                 print("\nFirst-time setup: You'll need to authenticate with Spotify.")
                 print("1. Open this URL in a browser:")
@@ -54,7 +54,7 @@ def get_spotify_client():
         print(f"Error initializing Spotify client: {e}")
         raise
 
-# Before using any spotify functions, add:
+
 sp = get_spotify_client()
 
 # play a specific Spotify track
