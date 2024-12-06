@@ -3,8 +3,8 @@ from spotipy.oauth2 import SpotifyOAuth
 import os
 
 # spotify API credentials, from Spotify for Developers created app data
-SPOTIFY_CLIENT_ID = '61c50c52eef44c7ea1f2db70606fcf2c'
-SPOTIFY_CLIENT_SECRET = '5cd9b77c241b4287b2bdf58b0650122e'
+SPOTIFY_CLIENT_ID = ''
+SPOTIFY_CLIENT_SECRET = ''
 SPOTIFY_REDIRECT_URI = 'http://localhost:9090'
 SCOPE = 'user-modify-playback-state user-read-playback-state'
 
