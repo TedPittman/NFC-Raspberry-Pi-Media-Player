@@ -23,13 +23,13 @@ pn532 = PN532_SPI(spi, cs_pin, reset=reset_pin)
 # pygame mixer for playing mp3s
 pygame.mixer.init()
 
-# File to store the NFC to MP3 and Spotify track URI associations
+# file to store the NFC to MP3 and Spotify track URI associations
 nfc_mapping_file = "nfc_mapping.json"
 
 # load Spotify client
 sp = get_spotify_client()
 
-# Function to load the tag-MP3/Spotify mappings
+# function to load the mappings
 def load_nfc_mapping():
     try:
         with open(nfc_mapping_file, "r") as f:
@@ -42,7 +42,7 @@ def load_nfc_mapping():
 
 nfc_mapping = load_nfc_mapping()
 
-# prompt user to choose whether mp3 or spotify data is retrieved from a tag
+# prompt user to choose whether mp3 or spotify will be played from a tag
 def prompt_user_for_playback_method():
     while True:
         user_choice = input("Scan detected. Choose playback method:\n1: MP3\n2: Spotify\nChoice: ")
@@ -56,7 +56,6 @@ def prompt_user_for_playback_method():
 playback_method = prompt_user_for_playback_method()
 
 print("Waiting for an NFC card...")
-
 '''
 read_passive_target(card_baud: int = micropython.const, timeout: float = 1) -> bytearray | None
 Wait for a MiFare card to be available and return its UID when found.
@@ -69,7 +68,7 @@ def read_nfc_tag():
         return None
     return ''.join([f'{i:02X}' for i in uid])
 
-# Function to play MP3 file associated with NFC tag
+# play MP3 file associated with NFC tag
 def play_mp3(tag_uid):
     if tag_uid in nfc_mapping:
         tag_data = nfc_mapping[tag_uid]
@@ -99,7 +98,7 @@ def play_mp3(tag_uid):
     else:
         print("Scanned tag not found in NFC mapping.")
 
-# Function to play Spotify track associated with NFC tag
+# play Spotify track associated with tag
 def play_spotify_from_tag(tag_uid):
     if tag_uid in nfc_mapping:
         tag_data = nfc_mapping[tag_uid]
@@ -115,26 +114,25 @@ def play_spotify_from_tag(tag_uid):
 is_paused = False
 
 # keyboard input handling function
-
 def keyboard_input_loop():
     global is_paused
 
     print("Controls: [p] Pause/Play, [s] Stop, [+] Volume Up, [-] Volume Down")
     
-    # Get spotify client once at the start
+    # spotify client once at the start
     sp = get_spotify_client()
 
     valid_keys = {'p', 's', '+', '-'}
 
     while True:
-        # Non-blocking check for input
+        # non blocking check for input
         if sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
             # read full input line
             user_input = sys.stdin.readline().strip().lower()
             
-            # Validate the entire line at once
+            # validate the entire line at once
             if len(user_input) == 1 and user_input in valid_keys:
-                # It's a valid key - process it
+                # is a valid key
                 try:
                     if playback_method == 'spotify':
                         playback = sp.current_playback()
@@ -183,7 +181,7 @@ def keyboard_input_loop():
                     except Exception as reconnect_error:
                         print(f"Failed to reconnect: {reconnect_error}")
             else:
-                # The input line is not one of the valid keys
+                # input line is not one of valid keys
                 print(f"Invalid input: '{user_input}'. Please use one of the given controls: (p, s, -, +)")
         
         time.sleep(0.1)
