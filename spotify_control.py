@@ -2,7 +2,7 @@ import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 import os
 
-# Spotify API credentials
+# spotify API credentials, from Spotify for Developers created app data
 SPOTIFY_CLIENT_ID = '61c50c52eef44c7ea1f2db70606fcf2c'
 SPOTIFY_CLIENT_SECRET = '5cd9b77c241b4287b2bdf58b0650122e'
 SPOTIFY_REDIRECT_URI = 'http://localhost:9090'
@@ -28,7 +28,7 @@ def get_spotify_client():
                 cache_path=cache_path
             )
             
-            # check if a cached token already exists on user device
+            # check if a cached token already exists on user device and if not, authenticate and connect Spotify account
             if not os.path.exists(cache_path):
                 print("\nFirst-time setup: You'll need to authenticate with Spotify.")
                 print("1. Open this URL in a browser:")
