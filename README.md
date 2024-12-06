@@ -1,6 +1,9 @@
 # NFC Raspberry Pi Media Player
 This project enables a Raspberry Pi 4 to interact with an NFC reader (PN-532) for on-demand MP3 playback and Spotify control. NFC cards are configured to store references to either MP3 files or Spotify URIs, allowing users to scan cards and instantly trigger playback through local speakers.
 
+Video Demo:
+https://1drv.ms/v/c/c494ba4c4c4a6fff/EeMUgNFUigdGqCFDSd7KGJoBNKYO3_XPt4SFgwPU7al1_A?e=wuvliE
+
 ## Features
 * NFC to MP3/Spotify Mapping: Each NFC card can store both an MP3 file path and a Spotify track URI, enabling dual functionality on a single card.
 * Local MP3 Playback: Uses pygame for MP3 playback with support for pause/resume, stop, and volume control.
