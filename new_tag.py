@@ -28,10 +28,10 @@ def save_nfc_mapping(mapping):
     with open(nfc_mapping_file, "w") as f:
         json.dump(mapping, f, indent=4)
 
-# load existing mappings
+# load existing mappings from file
 nfc_mapping = load_nfc_mapping()
 
-# Read the NFC tag
+# read in a NFC tag
 def read_nfc_tag():
     print("Waiting for an NFC card...")
     uid = pn532.read_passive_target(timeout=5.0)
@@ -63,7 +63,7 @@ def associate_nfc_with_content(tag_uid, mp3_file = None, spotify_url = None):
     print(f"Tag {tag_uid} has been updated with MP3: {mp3_file} and Spotify: {spotify_url}")
 
 
-# main loop to assign an MP3 or URL to an NFC tag
+# choose to assign an MP3 or URL to a tag
 print("Would you like to associate an MP3, a URL, or both with an NFC tag?")
 content_type = input("Enter 'mp3' for an MP3 file, 'url' for a Spotify URL, or 'both' for both: ").strip().lower()
 
